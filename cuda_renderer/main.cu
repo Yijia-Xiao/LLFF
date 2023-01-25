@@ -50,8 +50,10 @@ void gpu2ffmpeg(const char* filename, uint8_t* d_out_arr_vid,
     int imgcols = imageWidth, imgrows = imageHeight, elemSize = 3;
     
     stringstream sstm;
-    sstm << "/usr/bin/ffmpeg -y -framerate 30 -f rawvideo -vcodec rawvideo -s " << imgcols << "x" << imgrows  
+    sstm << "/data1/yijia.xiao/anaconda3/envs/llff/bin/ffmpeg -y -framerate 30 -f rawvideo -vcodec rawvideo -s " << imgcols << "x" << imgrows  
         <<" -pix_fmt rgb24 -i - -pix_fmt yuv420p -r 30 -crf " << crf << " -c:v libx264 -shortest " << filename;
+    // sstm << "/usr/bin/ffmpeg -y -framerate 30 -f rawvideo -vcodec rawvideo -s " << imgcols << "x" << imgrows  
+    //     <<" -pix_fmt rgb24 -i - -pix_fmt yuv420p -r 30 -crf " << crf << " -c:v libx264 -shortest " << filename;
 
     cout << "ffmpeg, calling:" << endl;
     cout << sstm.str() << endl;

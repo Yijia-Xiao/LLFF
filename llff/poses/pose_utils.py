@@ -69,22 +69,34 @@ def save_poses(basedir, poses, pts3d, perm):
     pts_arr = np.array(pts_arr)
     vis_arr = np.array(vis_arr)
     print( 'Points', pts_arr.shape, 'Visibility', vis_arr.shape )
-    
+    # Points (647, 3) Visibility (647, 2)
     zvals = np.sum(-(pts_arr[:, np.newaxis, :].transpose([2,0,1]) - poses[:3, 3:4, :]) * poses[:3, 2:3, :], 0)
     valid_z = zvals[vis_arr==1]
     print( 'Depth stats', valid_z.min(), valid_z.max(), valid_z.mean() )
-    
+    print('valid_z.shape', valid_z.shape)
+    # print('poses.shape', poses.shape)
+    # print('pts3d.shape', pts3d.shape)
     save_arr = []
     for i in perm:
         vis = vis_arr[:, i]
         zs = zvals[:, i]
         zs = zs[vis==1]
         close_depth, inf_depth = np.percentile(zs, .1), np.percentile(zs, 99.9)
-        # print( i, close_depth, inf_depth )
+        # print('i', i, close_depth.shape, inf_depth.shape )
+        # # i 0 () ()
+        # print('pose', poses[..., i].ravel(), poses[..., i].shape, poses[..., i].ravel().shape)
+        # # pose [ 0.00000000e+00  1.00000000e+00 -0.00000000e+00  9.65881390e-01
+        # # 1.52000000e+03  1.00000000e+00  0.00000000e+00 -0.00000000e+00
+        # # 4.78925468e+00  2.70400000e+03  0.00000000e+00  0.00000000e+00
+        # # -1.00000000e+00  1.06306761e+00  2.01175269e+03] (3, 5) (15,)
+        # print('vis', vis.shape)
+        # # vis (647,)
+        # print('zs', zs.shape)
+        # # zs (647,)
         
         save_arr.append(np.concatenate([poses[..., i].ravel(), np.array([close_depth, inf_depth])], 0))
+        print(f'close depth {close_depth}, inf depth {inf_depth}')
     save_arr = np.array(save_arr)
-    
     np.save(os.path.join(basedir, 'poses_bounds.npy'), save_arr)
             
 
@@ -270,9 +282,8 @@ def gen_poses(basedir, match_type, factors=None):
         print('Don\'t need to run COLMAP')
         
     print( 'Post-colmap')
-    
     poses, pts3d, perm = load_colmap_data(basedir)
-    
+
     save_poses(basedir, poses, pts3d, perm)
     
     if factors is not None:
